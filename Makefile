@@ -1,0 +1,2 @@
+all:
+	ocamlbuild hiq.byte
