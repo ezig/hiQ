@@ -16,13 +16,15 @@ type stmt =
 
 type program = {cbits : int; qubits : int; prog: stmt}
 
+let ugate_to_string b =
+	match b with
+	| H -> "H" 
+
+let bingate_to_string u =
+	match u with
+	| CNOT -> "CNOT"
+
 let ast_to_string ({cbits; qubits; prog} : program) : string =
-	let ugate_to_string b =
-		match b with
-		| H -> "H" in
-	let bingate_to_string u =
-		match u with
-		| CNOT -> "CNOT" in
 	let exp_to_string e =
 		match e with
 		| Measure (q, c) -> Printf.sprintf "measure(%d, %d)" q c

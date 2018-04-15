@@ -1,2 +1,2 @@
 all:
-	ocamlbuild hiq.byte
+	ocamlbuild -use-ocamlfind hiq.byte hiq_mapper.byte
