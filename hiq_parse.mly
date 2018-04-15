@@ -19,22 +19,25 @@ let parse_error s =
 %type <Hiq_ast.exp> exp
 
 %token <int> INT
-%token QUBIT CBIT IF ELSE WHILE LPAREN RPAREN LBRACE RBRACE SEMI COMMA
-%token H CNOT MEASURE
+%nonassoc LOWER_THAN_ELSE
+%token QUBIT CBIT IF ELSE WHILE LPAREN RPAREN LBRACE RBRACE COMMA
+%token H X CNOT MEASURE
+%token SEMI
 %token EOF
 
 %%
 
 program:
-  CBIT INT SEMI QUBIT INT SEMI stmt EOF { {cbits = $2; qubits = $5; prog = $7} }
+  CBIT INT QUBIT INT stmt EOF { {cbits = $2; qubits = $4; prog = $5} }
 
 stmt :
 | exp { Exp ($1) }
 | stmt SEMI stmt { Seq ($1, $3) }
-| IF LPAREN exp RPAREN LBRACE stmt RBRACE { If ($3, $6, None) } 
+| IF LPAREN exp RPAREN LBRACE stmt RBRACE { If ($3, $6, None) } %prec LOWER_THAN_ELSE 
 | IF LPAREN exp RPAREN LBRACE stmt RBRACE ELSE LBRACE stmt RBRACE { If ($3, $6, Some $10) } 
 
 exp:
 | MEASURE LPAREN INT COMMA INT RPAREN { Measure ($3, $5) }
 | H LPAREN INT RPAREN { UGate (H, $3) }
+| X LPAREN INT RPAREN { UGate (X, $3) }
 | CNOT LPAREN INT COMMA INT RPAREN { BinGate (CNOT, $3, $5) }

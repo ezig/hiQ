@@ -3,8 +3,8 @@
 #const n_phys = 3.
 
 % Map each abstract 
-abs(1..n_abs).
-{ abstophys(X,1..n_phys) } = 1 :- abs(X).
+abs(0..2).
+{ abstophys(X,0..2) } = 1 :- abs(X).
 
 % Qubit assignment rules
 
@@ -14,7 +14,3 @@ abs(1..n_abs).
 :- abstophys(A1, P1), abstophys(A2, P2), absgate(A1, A2, G), not physgate(P1, P2, G).
 
 #show abstophys/2.
-
-% Physical gate constraints
-physgate(2, 3, "CNOT").
-physgate(2, 1, "CNOT").

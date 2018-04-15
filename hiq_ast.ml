@@ -1,4 +1,4 @@
-type ugate = H
+type ugate = H | X
 type bingate = CNOT
 
 type cbit = int
@@ -18,7 +18,8 @@ type program = {cbits : int; qubits : int; prog: stmt}
 
 let ugate_to_string b =
 	match b with
-	| H -> "H" 
+	| H -> "H"
+	| X -> "X"
 
 let bingate_to_string u =
 	match u with

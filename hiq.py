@@ -6,12 +6,24 @@ from shutil import copyfile
 cCLINGO_FILE = "circuit.lp"
 cCLINGO_TMP = "tmp.lp"
 
+def load_computer(name):
+	with open("computers/%s" % name, "r") as f:
+		lines = map(lambda s: s.strip(), f.readlines())
+		system = lines[0]
+
+	constraints = "\n".join(map(lambda s: "physgate%s." % s, lines[1:]))
+	with open(cCLINGO_TMP, "a") as f:
+		f.write(constraints)
+		f.write("\n")
+
+	return system
+
 def main():
+	system = load_computer(sys.argv[2])
+
 	mapper_p = os.popen("./hiq_mapper.byte %s" % (sys.argv[1]))
 	edges = set(mapper_p.read().split())
 	_ = mapper_p.close()
-
-	copyfile(cCLINGO_FILE, cCLINGO_TMP)
 
 	with open(cCLINGO_TMP, "a") as f:
 		f.write("\n".join(edges))
@@ -37,4 +49,5 @@ def main():
 	print(res)
 
 if __name__ == '__main__':
+	copyfile(cCLINGO_FILE, cCLINGO_TMP)
 	main()

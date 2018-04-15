@@ -26,6 +26,7 @@ rule lexer = parse
 | "cbit" { CBIT }
 | "qubit" { QUBIT }
 | "H" { H }
+| "X" { X }
 | "CNOT" { CNOT }
 | "measure" { MEASURE }
 | eof { EOF }

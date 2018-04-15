@@ -3,7 +3,8 @@ open Hiq_ast
 let compile_to_ibm ({cbits; qubits; prog}) : string =
 	let ugate_name u =
 		match u with
-		| H -> "h" in
+		| H -> "h"
+		| X -> "x" in
 	let bingate_name b =
 		match b with
 		| CNOT -> "cx" in
