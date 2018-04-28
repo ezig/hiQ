@@ -1,10 +1,41 @@
 import re
 import sys
 import os
+import json
 from shutil import copyfile
 
 cCLINGO_FILE = "circuit.lp"
 cCLINGO_TMP = "tmp.lp"
+cHIQ_TMP = "tmp.hiq"
+
+def parse_json(file):
+	with open(file, "r") as data:
+		data = json.load(data)
+
+	nqubits = data["qubits"]
+	inputs = data["input"]
+	circuit = data["circuit"]
+
+	prog = "cbit %d\nqubit %d\n" % (nqubits, nqubits)
+
+	for i in range(len(inputs)):
+		if inputs[i] == 1:
+			prog += "X(%d);\n" % i
+
+	measures = []
+	for i in range(nqubits):
+		measures.append("measure(%d, %d)" % (i, i))
+
+	for g in circuit:
+		if (g["type"] == "x") and (len(g["controls"]) != 0):
+			prog += "CNOT(%d, %d);\n" % (g["targets"][0], g["controls"][0])
+		else:
+			prog += "%s(%d);\n" % (g["type"].upper(), g["targets"][0])
+
+	prog += ";\n".join(measures)
+
+	with open(cHIQ_TMP, "w") as f:
+		f.write(prog)
 
 def load_computer(name):
 	with open("computers/%s" % name, "r") as f:
@@ -20,6 +51,10 @@ def load_computer(name):
 
 def main():
 	system = load_computer(sys.argv[2])
+
+	if sys.argv[1].endswith("json"):
+		parse_json(sys.argv[1])
+		sys.argv[1] = cHIQ_TMP
 
 	mapper_p = os.popen("./hiq_mapper.byte %s" % (sys.argv[1]))
 	edges = set(mapper_p.read().split())
