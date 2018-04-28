@@ -1,0 +1,75 @@
+<html>
+<head>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/base.css">
+    <title>Quantum Circuit Simulator</title>
+    <script src="js/libs/numeric.js"></script>
+    <script src="js/libs/processing.js"></script>
+    <script src="js/bundle.js"></script>
+</head>
+<body>
+    <div>
+        <ul id="menubar" class="drop">
+            <li>
+                Workspace
+                <ul>
+                    <li><a href="#" onclick="window.open(window.location)">New</a></li>
+                    <li><a id="importJSON" href="#">Load</a></li>
+                    <li><a id="exportJSON" href="#">Save</a></li>
+                    <li>
+                        Examples
+                        <ul id="examples">
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Circuit
+                <ul>
+                    <li>
+                        <a id="evaluate" href="#" title="Evaluate circuit">
+                            Evaluate
+                            <div style="float:right; font-size: 11px">
+                                Enter
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a id="compile" href="#" title="Compile circuit to gate">
+                            Compile
+                            <div style="float:right; font-size: 11px">
+                                Ctrl+S
+                            </div>
+                        </a>
+                    </li>
+                    <li><a id="exportImage" href="#">Export Image</a></li>
+                    <li><a id="exportMatrix" href="#">Export Matrix</a></li>
+                    <li><a id="reset" href="#">Reset</a></li>
+                    <li id="nqubits">
+                        <span>Qubits</span>
+                        <ul></ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div style="clear:both">
+        <div id="content" style="float:left">
+            <div id="toolbar">
+                <div class="std"></div>
+                <div class="user"></div>
+            </div>
+            <div>
+                <canvas id="canvas"></canvas>
+            </div>
+            <div id="progress"><div></div></div>
+        </div>
+        <div id="amplitudes-container">
+            <div id="hide-impossible">(show all)</div>
+            <div id="amplitudes-scrollbox">
+                <table id="amplitudes"></table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
