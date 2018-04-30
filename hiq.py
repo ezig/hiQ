@@ -8,10 +8,7 @@ cCLINGO_FILE = "circuit.lp"
 cCLINGO_TMP = "tmp.lp"
 cHIQ_TMP = "tmp.hiq"
 
-def parse_json(file):
-	with open(file, "r") as data:
-		data = json.load(data)
-
+def parse_json(data):
 	nqubits = data["qubits"]
 	inputs = data["input"]
 	circuit = data["circuit"]
@@ -49,14 +46,10 @@ def load_computer(name):
 
 	return system
 
-def main():
-	system = load_computer(sys.argv[2])
+def compile(hiq_file, computer):
+	system = load_computer(computer)
 
-	if sys.argv[1].endswith("json"):
-		parse_json(sys.argv[1])
-		sys.argv[1] = cHIQ_TMP
-
-	mapper_p = os.popen("./hiq_mapper.byte %s" % (sys.argv[1]))
+	mapper_p = os.popen("./hiq_mapper.byte %s" % (hiq_file))
 	edges = set(mapper_p.read().split())
 	_ = mapper_p.close()
 
@@ -77,11 +70,23 @@ def main():
 
 	mapping = " ".join(map(get_mapping, solution.splitlines()[4].split()))
 
-	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (sys.argv[1], mapping))
+	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, mapping))
 	res = compiler_p.read()
 	_ = compiler_p.close()
 
 	print(res)
+
+def compile_from_json(json_str, computer):
+	parse_json(json_str)
+	compile(cHIQ_TMP, computer)
+
+def main():
+	if sys.argv[1].endswith("json"):
+		with open(sys.argv[1], "r") as data:
+			data = json.load(data)
+		compile_from_json(data, sys.argv[2])
+	else:
+		compile(sys.argv[1], sys.argv[2])
 
 if __name__ == '__main__':
 	copyfile(cCLINGO_FILE, cCLINGO_TMP)
