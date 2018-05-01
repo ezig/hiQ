@@ -3,4 +3,5 @@ _build/
 tmp.lp
 test.json
 tmp.hiq
+hiq.pyc
 

@@ -1,10 +1,6 @@
-% Number of abstract and physical qubits
-#const n_abs = 3.
-#const n_phys = 3.
-
 % Map each abstract 
-abs(0..2).
-{ abstophys(X,0..2) } = 1 :- abs(X).
+abs(0..n_abs).
+{ abstophys(X,0..n_phys) } = 1 :- abs(X).
 
 % Qubit assignment rules
 

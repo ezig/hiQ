@@ -38,16 +38,26 @@ def load_computer(name):
 	with open("computers/%s" % name, "r") as f:
 		lines = map(lambda s: s.strip(), f.readlines())
 		system = lines[0]
+		nqubits = int(lines[1])
 
-	constraints = "\n".join(map(lambda s: "physgate%s." % s, lines[1:]))
+	constraints = "\n".join(map(lambda s: "physgate%s." % s, lines[2:]))
 	with open(cCLINGO_TMP, "a") as f:
 		f.write(constraints)
 		f.write("\n")
 
-	return system
+	return system, nqubits
 
 def compile(hiq_file, computer):
-	system = load_computer(computer)
+	copyfile(cCLINGO_FILE, cCLINGO_TMP)
+
+	with open(hiq_file, "r") as f:
+		_ = f.readline()
+
+		qubits = f.readline()
+		qubit_matches = re.match("qubit (\d+)", qubits)
+		abs_qubits = int(qubit_matches.groups()[0])
+
+	system, phys_qubits = load_computer(computer)
 
 	mapper_p = os.popen("./hiq_mapper.byte %s" % (hiq_file))
 	edges = set(mapper_p.read().split())
@@ -55,7 +65,9 @@ def compile(hiq_file, computer):
 
 	with open(cCLINGO_TMP, "a") as f:
 		f.write("\n".join(edges))
-
+		f.write("#const n_abs = %d." % abs_qubits)
+		f.write("#const n_phys = %d." % phys_qubits)
+		
 	clingo_p = os.popen("clingo %s" % cCLINGO_TMP)
 	solution = clingo_p.read()
 	_ = clingo_p.close()
@@ -89,5 +101,4 @@ def main():
 		print(compile(sys.argv[1], sys.argv[2]))
 
 if __name__ == '__main__':
-	copyfile(cCLINGO_FILE, cCLINGO_TMP)
 	main()
