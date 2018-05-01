@@ -65,9 +65,9 @@ def compile(hiq_file, computer):
 
 	with open(cCLINGO_TMP, "a") as f:
 		f.write("\n".join(edges))
-		f.write("#const n_abs = %d." % abs_qubits)
-		f.write("#const n_phys = %d." % phys_qubits)
-		
+		f.write("\n#const n_abs = %d.\n" % (abs_qubits - 1))
+		f.write("#const n_phys = %d.\n" % (phys_qubits - 1))
+
 	clingo_p = os.popen("clingo %s" % cCLINGO_TMP)
 	solution = clingo_p.read()
 	_ = clingo_p.close()
@@ -80,7 +80,7 @@ def compile(hiq_file, computer):
 		match = re.match("abstophys\((\d+),(\d+)\)", s)
 		return "%s,%s" % (match.groups()[0], match.groups()[1])
 
-	mapping = " ".join(map(get_mapping, solution.splitlines()[4].split()))
+	mapping = " ".join(map(get_mapping, solution.splitlines()[-10].split()))
 
 	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, mapping))
 	res = compiler_p.read()
