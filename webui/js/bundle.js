@@ -180,6 +180,20 @@ module.exports = function () {
                 input: this.editor.input
             };
         }
+    }, {
+        key: 'hiqCompile',
+        value: function hiqCompile() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:5000/compile", false);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            var data = { circuit: this.exportWorkspace() };
+            console.log(data);
+            xhr.send(JSON.stringify(data));
+
+            if (xhr.status === 200) {
+                return xhr.responseText;
+            }
+        }
 
         /*
         Asynchronously compile every user defined gate in the workspace.
@@ -994,6 +1008,18 @@ window.onload = function () {
         var a = document.createElement('a');
         a.href = url;
         a.download = 'workspace.json';
+        a.click();
+    };
+
+    document.querySelector('#hiqCompile').onclick = function (evt) {
+        evt.preventDefault();
+
+        var out = app.hiqCompile();
+        var blob = new Blob([JSON.stringify(out)]);
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'circuit.hiq';
         a.click();
     };
 

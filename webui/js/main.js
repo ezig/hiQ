@@ -166,6 +166,18 @@ window.onload = () => {
         a.click();
     };
 
+    document.querySelector('#hiqCompile').onclick = evt => {
+        evt.preventDefault();
+
+        const out = app.hiqCompile();
+        const blob = new Blob([JSON.stringify(out)]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'circuit.hiq';
+        a.click();
+    }
+
     const resize = size => {
         document.querySelector('#nqubits > span').innerHTML = 'Qubits: ' + size;
         const newGates = app.circuit.gates.filter(gate => {

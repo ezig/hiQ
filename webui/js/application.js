@@ -158,6 +158,19 @@ module.exports = class Application {
         };
     }
 
+    hiqCompile() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:5000/compile", false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        const data = { circuit: this.exportWorkspace() }
+        console.log(data);
+        xhr.send(JSON.stringify(data));
+
+        if (xhr.status === 200) {
+            return xhr.responseText;
+        }
+    }
+
     /*
     Asynchronously compile every user defined gate in the workspace.
     */
