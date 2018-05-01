@@ -23,11 +23,11 @@ let compile_to_ibm ({cbits; qubits; prog}) : string =
 	(Printf.sprintf "q = qp.create_quantum_register(\"q\", %d)\n" qubits) ^
 	(Printf.sprintf "c = qp.create_classical_register(\"c\", %d)\n" cbits) ^
 	"circ = qp.create_circuit(\"circ\", [q], [c])\n" ^ (stmt_to_ibm prog)
-
+(* 
 let compile_to_pyquil ({cbits; qubits; prog}) : string =
 	let 
 	let rec stmt_to_pyquil s : string list =
 		match s with
 		| Exp e -> exp_to_pyquil e 
 		| Seq (s1, s2) -> (compile_to_pyquil s1) @ (compile_to_pyquil s2)
-		| _ -> failwith "If not implemented"
+		| _ -> failwith "If not implemented" *)
