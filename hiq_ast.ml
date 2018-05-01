@@ -43,4 +43,4 @@ let ast_to_string ({cbits; qubits; prog} : program) : string =
 			match s2o with
 			| None -> if_str
 			| Some s2 -> if_str ^ " else {\n" ^ stmt_to_string s2 ^ "\n}" in
-	Printf.sprintf "cbit %d;\nqubit %d;\n\n%s" cbits qubits (stmt_to_string prog)
+	Printf.sprintf "cbit %d\nqubit %d\n\n%s\n" cbits qubits (stmt_to_string prog)
