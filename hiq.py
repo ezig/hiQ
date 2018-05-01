@@ -8,6 +8,14 @@ cCLINGO_FILE = "circuit.lp"
 cCLINGO_TMP = "tmp.lp"
 cHIQ_TMP = "tmp.hiq"
 
+class Solution:
+    def __init__(self, mapping, optimizations):
+        self.mapping = mapping
+        self.opt = optimizations
+
+    def get_mapping_string(self):
+    	return " ".join(map(lambda x: "%d,%d" % (x[0], x[1]), self.mapping))
+
 def parse_json(data):
 	nqubits = data["qubits"]
 	inputs = data["input"]
@@ -77,14 +85,14 @@ def get_solutions(lines):
 		if l.startswith("abstophys"):
 			def get_mapping(s):
 				match = re.match("abstophys\((\d+),(\d+)\)", s)
-				return "%s,%s" % (match.groups()[0], match.groups()[1])
+				return (int(match.groups()[0]), int(match.groups()[1]))
 
-			sols.append(" ".join(map(get_mapping, l.split())))
+			sols.append(map(get_mapping, l.split()))
 		elif l.startswith("Optimization"):
 			m = re.match("Optimization: (\d+)", l)
 			opts.append(m.groups()[0])
 
-	return zip(sols, opts)
+	return map(lambda x: Solution(x[0], x[1]), zip(sols, opts))
 
 def compile(hiq_file, computer):
 	copyfile(cCLINGO_FILE, cCLINGO_TMP)
@@ -107,7 +115,6 @@ def compile(hiq_file, computer):
 		f.write("\n#const n_abs = %d.\n" % (abs_qubits - 1))
 		f.write("#const n_phys = %d.\n" % (phys_qubits - 1))
 
-	# compute all: clingo --opt-mode=enum --models 0 tmp.lp
 	clingo_p = os.popen("clingo --opt-mode=enum --models 0 %s 2>&1" % cCLINGO_TMP)
 	solution = clingo_p.read()
 	_ = clingo_p.close()
@@ -117,9 +124,9 @@ def compile(hiq_file, computer):
 		exit(1)
 
 	solutions = get_solutions(solution.splitlines())
-	solutions = sorted(solutions, key = lambda x: x[1])
+	solutions = sorted(solutions, key = lambda x: x.opt)
 
-	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, solutions[0][0]))
+	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, solutions[0].get_mapping_string()))
 	res = compiler_p.read()
 	_ = compiler_p.close()
 
