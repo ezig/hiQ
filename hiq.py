@@ -34,6 +34,28 @@ def parse_json(data):
 	with open(cHIQ_TMP, "w") as f:
 		f.write(prog)
 
+def find_swaps(gate_info):
+	cnots = {}
+	for l in gate_info:
+		m = re.match("\((\d+), (\d+), (\d+), \"CNOT\"\)", l)
+		if m is not None:
+			ctl = m.groups()[0]
+			targ = m.groups()[1]
+			sorted_bits = sorted([ctl, targ])
+
+			key = ",".join(sorted_bits)
+			if key in cnots:
+				cnots[key] += 1
+			else:
+				cnots[key] = 1
+
+	swaps = []
+	for bits, count in cnots.iteritems():
+		if count == 2:
+			swaps.append(bits)
+
+	return swaps
+
 def load_computer(name):
 	with open("computers/%s" % name, "r") as f:
 		lines = map(lambda s: s.strip(), f.readlines())
@@ -45,7 +67,24 @@ def load_computer(name):
 		f.write(constraints)
 		f.write("\n")
 
-	return system, nqubits
+	return system, nqubits, find_swaps(lines)
+
+def get_solutions(lines):
+	sols = []
+	opts = []
+
+	for l in lines:
+		if l.startswith("abstophys"):
+			def get_mapping(s):
+				match = re.match("abstophys\((\d+),(\d+)\)", s)
+				return "%s,%s" % (match.groups()[0], match.groups()[1])
+
+			sols.append(" ".join(map(get_mapping, l.split())))
+		elif l.startswith("Optimization"):
+			m = re.match("Optimization: (\d+)", l)
+			opts.append(m.groups()[0])
+
+	return zip(sols, opts)
 
 def compile(hiq_file, computer):
 	copyfile(cCLINGO_FILE, cCLINGO_TMP)
@@ -57,7 +96,7 @@ def compile(hiq_file, computer):
 		qubit_matches = re.match("qubit (\d+)", qubits)
 		abs_qubits = int(qubit_matches.groups()[0])
 
-	system, phys_qubits = load_computer(computer)
+	system, phys_qubits, swaps = load_computer(computer)
 
 	mapper_p = os.popen("./hiq_mapper.byte %s" % (hiq_file))
 	edges = set(mapper_p.read().split())
@@ -68,7 +107,8 @@ def compile(hiq_file, computer):
 		f.write("\n#const n_abs = %d.\n" % (abs_qubits - 1))
 		f.write("#const n_phys = %d.\n" % (phys_qubits - 1))
 
-	clingo_p = os.popen("clingo %s" % cCLINGO_TMP)
+	# compute all: clingo --opt-mode=enum --models 0 tmp.lp
+	clingo_p = os.popen("clingo --opt-mode=enum --models 0 %s 2>&1" % cCLINGO_TMP)
 	solution = clingo_p.read()
 	_ = clingo_p.close()
 
@@ -76,13 +116,10 @@ def compile(hiq_file, computer):
 		print("Unsatisfiable program.")
 		exit(1)
 
-	def get_mapping(s):
-		match = re.match("abstophys\((\d+),(\d+)\)", s)
-		return "%s,%s" % (match.groups()[0], match.groups()[1])
+	solutions = get_solutions(solution.splitlines())
+	solutions = sorted(solutions, key = lambda x: x[1])
 
-	mapping = " ".join(map(get_mapping, solution.splitlines()[-10].split()))
-
-	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, mapping))
+	compiler_p = os.popen("./hiq.byte %s \"%s\"" % (hiq_file, solutions[0][0]))
 	res = compiler_p.read()
 	_ = compiler_p.close()
 

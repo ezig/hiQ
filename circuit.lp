@@ -11,6 +11,6 @@ abs(0..n_abs).
 
 % Set priority of readout error higher
 #minimize { F@1, A, P, G : abstophys(A, P), absgate(A, _, G), physgate(P, _, F, G) }.
-#minimize { F@2, A, P : abstophys(A, P), absgate(A, _, "measure"), physgate(P, _, F, "measure") }.
+%#minimize { F@2, A, P : abstophys(A, P), absgate(A, _, "measure"), physgate(P, _, F, "measure") }.
 
 #show abstophys/2.
