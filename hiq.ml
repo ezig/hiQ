@@ -8,8 +8,8 @@ type live_range = int * int
 let parse_file () =
   let argv = Sys.argv in
   let _ = 
-    if Array.length argv != 5
-    then (prerr_string ("usage: " ^ argv.(0) ^ " [file-to-parse] [ranges] [mappings] [swaps]\n");
+    if Array.length argv != 6
+    then (prerr_string ("usage: " ^ argv.(0) ^ " [file-to-parse] [ranges] [mappings] [swaps] [system]");
     exit 1) in
   let ch = open_in argv.(1) in
   Hiq_parse.program Hiq_lex.lexer (Lexing.from_channel ch)
@@ -65,6 +65,7 @@ let rec interleave l1 l2 : stmt =
  	let ranges = parse_ranges Sys.argv.(2) in
  	let mappings = parse_mappings Sys.argv.(3) in
  	let swaps = parse_swaps Sys.argv.(4) in
+ 	let system = Sys.argv.(5) in
  	let partial_progs = List.map (fun (s, e) -> split prog s e) ranges in
  	let mapped_progs = List.map2 apply_mapping partial_progs mappings in
  	let mapped_stmts = List.map (fun p -> p.prog) mapped_progs in
@@ -73,4 +74,5 @@ let rec interleave l1 l2 : stmt =
  		|> List.map (List.map build_swap)
  		|> List.map merge_stmt_lst in
  	let final_stmt = interleave mapped_stmts swaps in
-	Printf.printf "%s" (compile_to_ibm {prog with prog = final_stmt})
+ 	let compiler = if system = "IBM" then compile_to_ibm else compile_to_pyquil in
+	Printf.printf "%s" (compiler {prog with prog = final_stmt})
