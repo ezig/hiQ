@@ -26,7 +26,7 @@ class Solution:
     		if m[1] != o[1]:
     			swaps.append(tuple(sorted((m[1], o[1]))))
 
-    	return swaps
+    	return set(swaps)
  
 class Candidate:
 	def __init__(self, psols, l_ranges, swaps):
@@ -185,8 +185,11 @@ def compile(hiq_file, computer):
 		arr[r][c].extend(map(lambda s: Candidate([s], [(r, c)], []), full_sols))
 
 		for j in range(r, c):
-			d(r, j)
-			d(j + 1, c)
+			if len(arr[r][j]) == 0:
+				d(r, j)
+
+			if len(arr[j + 1][c]) == 0:
+				d(j + 1, c)
 
 			merge_candidates = itertools.product(arr[r][j], arr[j + 1][c])
 
@@ -201,13 +204,17 @@ def compile(hiq_file, computer):
 
 	d(0, ngates - 1)
 
-	best_sol = sorted(arr[0][ngates - 1], key = lambda x : (len(x.swaps), x.opt()))[0]
+	sols = sorted(arr[0][ngates - 1], key = lambda x : (len(x.swaps), x.opt()))
+	if len(sols) == 0:
+		return "Unsatisfiable"
+
+	best_sol = sols[0]
 	
 	ranges = " ".join(map(lambda l: "%d,%d" % (l[0], l[1]), best_sol.l_ranges))
 	mappings = ";".join(map(lambda s: s.get_mapping_string(), best_sol.psols))
 	swaps = ";".join(map(lambda s: " ".join(map(lambda p: "%d,%d" % (p[0], p[1]), s)), best_sol.swaps))
 
-	res, _ = run_shell("./hiq.byte %s \"%s\" \"%s\" \"%s\"" % (hiq_file, ranges, mappings, swaps))
+	res, _ = run_shell("./hiq.byte %s \"%s\" \"%s\" \"%s\" %s" % (hiq_file, ranges, mappings, swaps, system))
 
 	return res
 
