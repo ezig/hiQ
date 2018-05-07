@@ -56,6 +56,14 @@ module.exports = class Draw {
         this.gfx.fill(255);
     }
 
+    measure(x, y, h) {
+        this.gfx.fill(255);
+        this.gfx.rect(x - 17, y - 17, 40 - 6, h * 40 - 6);
+        this.gfx.fill(0);
+        this.gfx.text("M", x, (y + (h / 2) * 40) - 17);
+        this.gfx.fill(255);
+    }
+
     swap(x, y) {
         this.gfx.line(x - 5, y - 5, x + 5, y + 5);
         this.gfx.line(x - 5, y + 5, x + 5, y - 5);

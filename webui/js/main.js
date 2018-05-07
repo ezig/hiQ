@@ -170,12 +170,14 @@ window.onload = () => {
         evt.preventDefault();
 
         const out = app.hiqCompile();
-        const blob = new Blob([JSON.stringify(out)]);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'circuit.hiq';
-        a.click();
+
+        document.querySelector("#hiqoutput").innerHTML = "<pre>" + out + "</pre>";
+        // const blob = new Blob([JSON.stringify(out)]);
+        // const url = URL.createObjectURL(blob);
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = 'circuit.hiq';
+        // a.click();
     }
 
     const resize = size => {
@@ -251,17 +253,38 @@ window.onload = () => {
         examplesEl.appendChild(li);
     });
 
-    document.querySelector('#about').onclick = evt => {
-        document.querySelector('#modal').style.display = 'block';
-    };
+    const COMPUTERS = [
+        "ibmqx4",
+        "forest",
+        "miniforest"
+    ];
+    const computersEl = document.querySelector('#computers > ul');
+    COMPUTERS.forEach((computer, i) => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.appendChild(document.createTextNode(computer));
+        a.onclick = evt => {
+            evt.preventDefault();
+            app.workspace.computer = computer;
+            document.querySelector('#computers > span').innerHTML = 'Computer: ' + computer;
+        };
+    
+        const li = document.createElement('li');
+        li.appendChild(a);
+        computersEl.appendChild(li);
+    });
 
-    document.querySelector('#modal').onclick = evt => {
-        document.querySelector('#modal').style.display = 'none';
-    };
+    // document.querySelector('#about').onclick = evt => {
+    //     document.querySelector('#modal').style.display = 'block';
+    // };
 
-    document.querySelector('#modal > div').onclick = evt => {
-        evt.preventDefault();
-        evt.stopPropagation();
-    };
+    // document.querySelector('#modal').onclick = evt => {
+    //     document.querySelector('#modal').style.display = 'none';
+    // };
+
+    // document.querySelector('#modal > div').onclick = evt => {
+    //     evt.preventDefault();
+    //     evt.stopPropagation();
+    // };
 
 };

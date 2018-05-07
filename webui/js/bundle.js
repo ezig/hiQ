@@ -97,6 +97,8 @@ module.exports = function () {
                 draw.control(20, 20);
             } else if (name == 'cnot') {
                 draw.not(20, 20);
+            } else if (name == 'measure') {
+                draw.measure(20, 20, 1);
             } else {
                 draw.gate(20, 20, 1, name.toUpperCase());
             }
@@ -186,8 +188,7 @@ module.exports = function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "http://localhost:5000/compile", false);
             xhr.setRequestHeader('Content-Type', 'application/json');
-            var data = { circuit: this.exportWorkspace() };
-            console.log(data);
+            var data = { computer: this.workspace.computer, circuit: this.exportWorkspace() };
             xhr.send(JSON.stringify(data));
 
             if (xhr.status === 200) {
@@ -460,6 +461,15 @@ module.exports = function () {
             this.gfx.rect(x - 17, y - 17, 40 - 6, h * 40 - 6);
             this.gfx.fill(0);
             this.gfx.text(text, x, y + h / 2 * 40 - 17);
+            this.gfx.fill(255);
+        }
+    }, {
+        key: 'measure',
+        value: function measure(x, y, h) {
+            this.gfx.fill(255);
+            this.gfx.rect(x - 17, y - 17, 40 - 6, h * 40 - 6);
+            this.gfx.fill(0);
+            this.gfx.text("M", x, y + h / 2 * 40 - 17);
             this.gfx.fill(255);
         }
     }, {
@@ -825,6 +835,8 @@ module.exports = function () {
                 draw.swap(x, y1);
                 draw.wire(x, y1, _y);
                 draw.swap(x, _y);
+            } else if (this.type.name == 'measure') {
+                draw.measure(x, y1, 1);
             } else {
                 draw.gate(x, y1, this.targets.length, this.type.name.toUpperCase());
             }
@@ -1015,12 +1027,15 @@ window.onload = function () {
         evt.preventDefault();
 
         var out = app.hiqCompile();
-        var blob = new Blob([JSON.stringify(out)]);
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'circuit.hiq';
-        a.click();
+
+        document.querySelector("#hiqoutput").innerHTML = "<pre>" + out + "</pre>";
+        console.log("HELLO");
+        // const blob = new Blob([JSON.stringify(out)]);
+        // const url = URL.createObjectURL(blob);
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = 'circuit.hiq';
+        // a.click();
     };
 
     var resize = function resize(size) {
@@ -1094,18 +1109,35 @@ window.onload = function () {
         examplesEl.appendChild(li);
     });
 
-    document.querySelector('#about').onclick = function (evt) {
-        document.querySelector('#modal').style.display = 'block';
-    };
+    var COMPUTERS = ["ibmqx4", "forest", "miniforest"];
+    var computersEl = document.querySelector('#computers > ul');
+    COMPUTERS.forEach(function (computer, i) {
+        var a = document.createElement('a');
+        a.href = '#';
+        a.appendChild(document.createTextNode(computer));
+        a.onclick = function (evt) {
+            evt.preventDefault();
+            app.workspace.computer = computer;
+            document.querySelector('#computers > span').innerHTML = 'Computer: ' + computer;
+        };
 
-    document.querySelector('#modal').onclick = function (evt) {
-        document.querySelector('#modal').style.display = 'none';
-    };
+        var li = document.createElement('li');
+        li.appendChild(a);
+        computersEl.appendChild(li);
+    });
 
-    document.querySelector('#modal > div').onclick = function (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-    };
+    // document.querySelector('#about').onclick = evt => {
+    //     document.querySelector('#modal').style.display = 'block';
+    // };
+
+    // document.querySelector('#modal').onclick = evt => {
+    //     document.querySelector('#modal').style.display = 'none';
+    // };
+
+    // document.querySelector('#modal > div').onclick = evt => {
+    //     evt.preventDefault();
+    //     evt.stopPropagation();
+    // };
 };
 
 },{"./application":1,"./examples":5}],8:[function(require,module,exports){
@@ -1234,6 +1266,7 @@ module.exports = function () {
         _classCallCheck(this, Workspace);
 
         this.app = app;
+        this.computer = "ibmqx4";
         this.gates = {};
         this.installStandardGates();
     }
@@ -1243,8 +1276,8 @@ module.exports = function () {
         value: function installStandardGates() {
             this.addGate({ name: 'h', qubits: 1, matrix: quantum.h, title: 'Hadamard' }, true);
             this.addGate({ name: 'x', qubits: 1, matrix: quantum.x, title: 'Pauli-X' }, true);
-            // this.addGate({name: 'y', qubits: 1, matrix: quantum.y, title: 'Pauli-Y'}, true);
-            // this.addGate({name: 'z', qubits: 1, matrix: quantum.z, title: 'Pauli-Z'}, true);
+            this.addGate({ name: 'y', qubits: 1, matrix: quantum.y, title: 'Pauli-Y' }, true);
+            this.addGate({ name: 'measure', qubits: 1, matrix: quantum.h, title: 'Measure' }, true);
             // this.addGate({name: 's', qubits: 1, matrix: quantum.s, title: 'Phase Gate'}, true);
             // this.addGate({name: 't', qubits: 1, matrix: quantum.r4, title: 'Same as R4'}, true);
             this.addGate({ name: 'cnot', qubits: 2, matrix: quantum.cnot, title: 'Controlled Not' }, true);

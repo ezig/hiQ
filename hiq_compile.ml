@@ -59,6 +59,7 @@ let compile_to_pyquil ({cbits; qubits; prog}) : string =
 		| Seq (s1, s2) -> (stmt_to_pyquil s1) ^ "\n" ^ (stmt_to_pyquil s2)
 		| _ -> failwith "If not implemented"
 	in
-	"from pyquil.quil import Program\n" ^
-	"from pyquil.gates import " ^ (String.concat ", " (List.sort_uniq compare (s_gates prog))) ^ "\n\n" ^
-	"p = Program()\n" ^ (stmt_to_pyquil prog)
+	"from pyquil.quil import Program" ^
+	(let gates = s_gates prog in if List.length gates = 0 then "" else
+		"\nfrom pyquil.gates import " ^ (String.concat ", " (List.sort_uniq compare gates)))
+	^ "\n\n" ^ "p = Program()\n" ^ (stmt_to_pyquil prog)

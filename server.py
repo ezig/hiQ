@@ -10,7 +10,8 @@ CORS(app)
 
 @app.route("/compile", methods=["POST"])
 def compile():
-	return compile_from_json(json.loads(request.data)["circuit"], "ibmqx4")
+	data = json.loads(request.data)
+	return compile_from_json(data["circuit"], data["computer"])
 
 if __name__ == '__main__':
 	app.run(debug=True)

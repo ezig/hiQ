@@ -51,6 +51,8 @@ module.exports = class Gate {
             draw.swap(x, y1);
             draw.wire(x, y1, y2);
             draw.swap(x, y2);
+        } else if (this.type.name == 'measure') {
+            draw.measure(x, y1, 1);
         } else {
             draw.gate(x, y1, this.targets.length, this.type.name.toUpperCase());
         }

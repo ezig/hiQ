@@ -16,6 +16,11 @@
                     <li><a href="#" onclick="window.open(window.location)">New</a></li>
                     <li><a id="importJSON" href="#">Load</a></li>
                     <li><a id="exportJSON" href="#">Save</a></li>
+                    <li id="computers">
+                        <span>Computer: ibmqx4</span>
+                        <ul>
+                        </ul>
+                    </li>
                     <li>
                         Examples
                         <ul id="examples">
@@ -28,23 +33,15 @@
                 <ul>
                     <li>
                         <a id="evaluate" href="#" title="Evaluate circuit">
-                            Evaluate
-                            <div style="float:right; font-size: 11px">
-                                Enter
-                            </div>
                         </a>
                     </li>
                     <li>
                         <a id="compile" href="#" title="Compile circuit to gate">
-                            Compile
-                            <div style="float:right; font-size: 11px">
-                                Ctrl+S
-                            </div>
                         </a>
                     </li>
+                    <li><a id="exportImage" href="#"></a></li>
+                    <li><a id="exportMatrix" href="#"></a></li>
                     <li><a id="hiqCompile" href="#"> hiQ Compile</a></li>
-                    <li><a id="exportImage" href="#">Export Image</a></li>
-                    <li><a id="exportMatrix" href="#">Export Matrix</a></li>
                     <li><a id="reset" href="#">Reset</a></li>
                     <li id="nqubits">
                         <span>Qubits</span>
@@ -71,6 +68,8 @@
                 <table id="amplitudes"></table>
             </div>
         </div>
+    </div>
+    <div id="hiqoutput">
     </div>
 </body>
 </html>

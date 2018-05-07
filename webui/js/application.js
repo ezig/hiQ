@@ -82,6 +82,8 @@ module.exports = class Application {
             draw.control(20, 20);
         } else if (name == 'cnot') {
             draw.not(20, 20);
+        } else if (name == 'measure') {
+            draw.measure(20, 20, 1);
         } else {
             draw.gate(20, 20, 1, name.toUpperCase());
         }
@@ -162,8 +164,7 @@ module.exports = class Application {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://localhost:5000/compile", false);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        const data = { circuit: this.exportWorkspace() }
-        console.log(data);
+        const data = { computer: this.workspace.computer, circuit: this.exportWorkspace() }
         xhr.send(JSON.stringify(data));
 
         if (xhr.status === 200) {

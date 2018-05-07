@@ -4,6 +4,7 @@ module.exports = class Workspace {
 
     constructor(app) {
         this.app = app;
+        this.computer = "ibmqx4"
         this.gates = {};
         this.installStandardGates();
     }
@@ -11,8 +12,8 @@ module.exports = class Workspace {
     installStandardGates() {
         this.addGate({name: 'h', qubits: 1, matrix: quantum.h, title: 'Hadamard'}, true);
         this.addGate({name: 'x', qubits: 1, matrix: quantum.x, title: 'Pauli-X'}, true);
-        // this.addGate({name: 'y', qubits: 1, matrix: quantum.y, title: 'Pauli-Y'}, true);
-        // this.addGate({name: 'z', qubits: 1, matrix: quantum.z, title: 'Pauli-Z'}, true);
+        this.addGate({name: 'y', qubits: 1, matrix: quantum.y, title: 'Pauli-Y'}, true);
+        this.addGate({name: 'measure', qubits: 1, matrix: quantum.h, title: 'Measure'}, true);
         // this.addGate({name: 's', qubits: 1, matrix: quantum.s, title: 'Phase Gate'}, true);
         // this.addGate({name: 't', qubits: 1, matrix: quantum.r4, title: 'Same as R4'}, true);
         this.addGate({name: 'cnot', qubits: 2, matrix: quantum.cnot, title: 'Controlled Not'}, true);

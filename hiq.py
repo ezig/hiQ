@@ -60,17 +60,21 @@ def parse_json(data):
 		if inputs[i] == 1:
 			prog += "X(%d);\n" % i
 
-	measures = []
-	for i in range(nqubits):
-		measures.append("measure(%d, %d)" % (i, i))
+	# measures = []
+	# for i in range(nqubits):
+	# 	measures.append("measure(%d, %d)" % (i, i))
 
 	for g in circuit:
 		if (g["type"] == "x") and (len(g["controls"]) != 0):
 			prog += "CNOT(%d, %d);\n" % (g["targets"][0], g["controls"][0])
+		elif g["type"] == "measure":
+			targ = g["targets"][0]
+			prog += "measure(%d, %d);\n" % (targ, targ)
 		else:
 			prog += "%s(%d);\n" % (g["type"].upper(), g["targets"][0])
 
-	prog += ";\n".join(measures)
+	prog = prog[:-2]
+	# prog += ";\n".join(measures)
 
 	with open(cHIQ_TMP, "w") as f:
 		f.write(prog)

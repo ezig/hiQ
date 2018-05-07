@@ -34,6 +34,10 @@ canvas:focus {
     background-color: #f90;
     opacity: 0.5;
 }
+#hiqoutput {
+    float:left;
+    margin-left: 50px;
+}
 #amplitudes-container {
     float:left;
     margin-left: 50px;
