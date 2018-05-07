@@ -13,10 +13,10 @@ module.exports = class Workspace {
         this.addGate({name: 'h', qubits: 1, matrix: quantum.h, title: 'Hadamard'}, true);
         this.addGate({name: 'x', qubits: 1, matrix: quantum.x, title: 'Pauli-X'}, true);
         this.addGate({name: 'y', qubits: 1, matrix: quantum.y, title: 'Pauli-Y'}, true);
-        this.addGate({name: 'measure', qubits: 1, matrix: quantum.h, title: 'Measure'}, true);
         // this.addGate({name: 's', qubits: 1, matrix: quantum.s, title: 'Phase Gate'}, true);
         // this.addGate({name: 't', qubits: 1, matrix: quantum.r4, title: 'Same as R4'}, true);
         this.addGate({name: 'cnot', qubits: 2, matrix: quantum.cnot, title: 'Controlled Not'}, true);
+        this.addGate({name: 'measure', qubits: 1, matrix: quantum.h, title: 'Measure'}, true);
         // this.addGate({name: 'control', title: 'Control'}, true);
         // this.addGate({name: 'swap', qubits: 2, matrix: quantum.swap, title: 'Swap'}, true);
     //     this.addGate({name: 'r2', qubits: 1, matrix: quantum.r2, title: 'Pi/2 Phase Rotatation'}, true);
